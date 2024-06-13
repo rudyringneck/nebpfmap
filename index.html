@@ -1,85 +1,633 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>leaflet-map-csv</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="utf-8">
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title></title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Load Leaflet code library - see updates at http://leafletjs.com/download.html -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+
+  <script type="text/javascript" src="https://fiddle.jshell.net/js/lib/dummy.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://fiddle.jshell.net/css/result-light.css">
+
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/csv2geojson@latest/csv2geojson.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.0/dist/leaflet.markercluster.layersupport.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.1/dist/leaflet.markercluster.layersupport.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
 
-  <!-- Load jQuery and PapaParse to read data from a CSV file -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
-
-  <!-- Position the map with Cascading Style Sheet (CSS) -->
-  <style>
-    body { margin:0; padding:0; }
-    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
-  </style>
-
-</head>
-<body>
-
-  <!-- Insert HTML division tag to layout the map -->
-  <div id="map"></div>
-
-  <!-- Insert Javascript (.js) code to create the map -->
-  <script>
-
-  // Set up initial map center and zoom level
-  var map = L.map('map', {
-    center: [41.57, -72.69], // EDIT latitude, longitude to re-center map
-    zoom: 9,  // EDIT from 1 to 18 -- decrease to zoom out, increase to zoom in
-    scrollWheelZoom: false,
-    tap: false
-  });
-
-  /* Control panel to display map layers */
-  var controlLayers = L.control.layers( null, null, {
-    position: "topright",
-    collapsed: false
-  }).addTo(map);
-
-  // display Carto basemap tiles with light features and labels
-  var light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
-  }).addTo(map); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
-  controlLayers.addBaseLayer(light, 'Carto Light basemap');
-
-  /* Stamen colored terrain basemap tiles with labels */
-  var terrain = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
-  }); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
-  controlLayers.addBaseLayer(terrain, 'Stamen Terrain basemap');
-
-  // see more basemap options at https://leaflet-extras.github.io/leaflet-providers/preview/
-
-  // Read markers data from data.csv
-  $.get('./data.csv', function(csvString) {
-
-    // Use PapaParse to convert string to array of objects
-    var data = Papa.parse(csvString, {header: true, dynamicTyping: true}).data;
-
-    // For each row in data, create a marker and add it to the map
-    // For each row, columns `Latitude`, `Longitude`, and `Title` are required
-    for (var i in data) {
-      var row = data[i];
-
-      var marker = L.marker([row.Latitude, row.Longitude], {
-        opacity: 1
-      }).bindPopup(row.Title);
-      
-      marker.addTo(map);
+  <style id="compiled-css" type="text/css">
+        #map {
+      height: calc(100% - 80px); /* Adjust this value if needed for other elements */
+      width: 100%;
+    }
+   #slider {
+      margin: 20px;
     }
 
+#progress {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    left: 400px;
+    top: 300px;
+    width: 200px;
+    height: 20px;
+    margin-top: -20px;
+    margin-left: -100px;
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+#progress-bar {
+    width: 0;
+    height: 100%;
+    background-color: #76A6FC;
+    border-radius: 4px;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.buttonsTable {
+    border: 1px solid grey;
+    border-collapse: collapse;
+}
+
+.buttonsTable td, .buttonsTable th {
+    padding: 0.5em;
+    border: 1px solid grey;
+}
+
+.version-disabled {
+    text-decoration: line-through;
+}
+
+
+.custom-marker {
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+margin-right: 8px;
+  color: #fff; /* Text color for cluster count */
+}
+
+/* custom icon styles */
+
+.marker-icon-ymh::before {
+  font-family: FontAwesome;
+  content: '\f111'; /* Unicode for the star icon */
+  color: #b30000; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-pfw::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #90c987; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-cfw::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #f6c141; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-psc::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #f48f56; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-chapterproject::before {
+  font-family: 'bootstrap-icons';
+  content: '\f5e3'; /* Unicode for the star icon */
+  color: #7bafde; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-nextsteps::before {
+  font-family: FontAwesome;
+  content: '\f111'; /* Unicode for the star icon */
+  color: #fec12c; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-wow::before {
+  font-family: FontAwesome;
+  content: '\f111'; /* Unicode for the star icon */
+  color: #4575b4; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-bp::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #b587c7; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+  z-index: 999; /* Ensure the marker is on top */
+}
+
+.marker-icon-habitatshare::before {
+  font-family: 'bootstrap-icons';
+  content: '\f5e3'; /* Unicode for the star icon */
+  color: #ae76a3; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-ofw::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #FDAE33; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-rxfire::before {
+  font-family: 'bootstrap-icons';
+  content: '\f5e3'; /* Unicode for the star icon */
+  color: #ef6548; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-tsp::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #09bb9f; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-habitattour::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #005077; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-pfwwl::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #238f9d; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-gip::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #7968aa; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+
+/* Custom cluster icon style */
+.custom-cluster-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: #fff; /* Text color for cluster count */
+}
+
+/* Adjust the color and styles for cluster on hover */
+.custom-cluster-icon:hover {
+  background-color: #3bb2d0; /* Your custom hover background color */
+  cursor: pointer;
+}
+
+        /* Small clusters */
+        .marker-cluster-small {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Medium clusters */
+        .marker-cluster-medium {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Large clusters */
+        .marker-cluster-large {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Extra large clusters */
+        .marker-cluster-extra-large {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Adjust text color for better visibility */
+        /* You can customize this as well */
+        .marker-cluster div {
+            color: #282828; /* Text color for cluster numbers */
+        }
+
+        /* Hover styles for clusters */
+        /* Customize the hover styles as needed */
+        .marker-cluster:hover {
+            background-color: #3bb2d0; /* Your custom hover background color */
+            color: #fff; /* Text color on hover */
+        }
+
+.legend {
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.legend h4 {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/*custom code for slider*/
+.noUi-connect{background:#5e5e5e!important}
+
+    .noUi-target, .noUi-base, .noUi-origin, .noUi-handle, .noUi-connect, .noUi-vertical, .noUi-horizontal, .noUi-txt-dir-rtl, .noUi-horizontal .noUi-handle, .noUi-vertical .noUi-handle {
+      font-family: sans-serif !important;
+font-size: 16px!important;
+    }
+
+   /* Adjust pip lines and labels */
+    .noUi-pips-horizontal .noUi-value {
+      margin-top: 15px; /* Adjust this value to add more space between lines and labels */
+           font-size: 12px; /* Adjust font size if necessary */
+    }
+    .noUi-pips-horizontal .noUi-marker-large {
+      height: 5px; /* Adjust height to make lines shorter */
+      top: 10px; /* Adjust top position if necessary */
+    }
+
+#map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+#slider-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+#slider {
+}
+
+.total-count-text {
+    padding: 5px 10px; /* Top-Bottom, Left-Right padding */
+    background-color: white; /* Optional: Add a background color *?
+    display: inline-block; /* Ensure it fits content */
+  }
+
+    /* EOS */
+  </style>
+
+  <script id="insert"></script>
+
+    \
+</head>
+<body>
+    
+  <title>Nebraska Pheasants Forever Accomplishments</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/csv2geojson@latest/csv2geojson.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.0/dist/leaflet.markercluster.layersupport.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+
+   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+    #map {
+      height: calc(95% - 60px); /* Adjust this value if needed */
+      width: 100%;
+    }
+
+
+
+#slider {
+position:
+  width: 80%;
+  max-width: 600px; /* Set a maximum width for the slider */
+height:15px;
+margin-left: 30px;
+}
+  </style>
+</head>
+  <div id="map-container">
+<div id="map"></div>
+<div id="slider" ></div>
+</div>
+
+  
+
+    <script type="text/javascript">
+
+    var map = L.map('map').setView([41.576, -99.634], 7);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 12,
+    }).addTo(map);
+
+    var markerCluster = L.markerClusterGroup();
+    var YMH = new L.layerGroup();
+    var NextSteps = new L.layerGroup();
+    var WOW = new L.layerGroup();
+    var PFW = new L.layerGroup();
+    var PFWWL = new L.layerGroup();
+    var GIP = new L.layerGroup();
+    var CFW = new L.layerGroup();
+    var PSC = new L.layerGroup();
+    var RxFire = new L.layerGroup();
+    var ChapterProject = new L.layerGroup();
+    var HabitatShare = new L.layerGroup();
+    var HabitatTour = new L.layerGroup();
+    var TSP = new L.layerGroup();
+    var BP = new L.layerGroup();
+    var OFW = new L.layerGroup();
+
+    var allMarkers = [];
+
+    function createCustomIcon(className) {
+      return L.divIcon({
+        className: 'custom-marker ' + className,
+      });
+    }
+
+    var programGroups = {
+      "YMH": YMH,
+      "Next Steps": NextSteps,
+      "WOW": WOW,
+      "PFW": PFW,
+      "PFWWL": PFWWL,
+      "GIP": GIP,
+      "CFW": CFW,
+      "PSC": PSC,
+      "Rx Fire": RxFire,
+      "Chapter Project": ChapterProject,
+      "Habitat Share": HabitatShare,
+      "Habitat Tour": HabitatTour,
+      "TSP": TSP,
+      "BP": BP,
+      "OFW": OFW
+    };
+
+    var years = [2019, 2020, 2021, 2022, 2023, 2024];
+
+    var mcgLayerSupportGroup = L.markerClusterGroup.layerSupport();
+    Object.values(programGroups).forEach(function(group) {
+      mcgLayerSupportGroup.checkIn(group);
+    });
+
+    mcgLayerSupportGroup.addTo(map);
+
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfQd3Get9tbbE-2bW6eY9BzOXtJFSQy4lS8_Nxj3ImRoTpbo-HcEhhVAjDrz17LeIGg41BIxVHkALE/pub?gid=2038937128&single=true&output=csv';
+
+  
+
+    fetch(csvUrl)
+      .then(response => response.text())
+      .then(csvData => {
+        csv2geojson.csv2geojson(csvData, {
+          latfield: 'latitude',
+          lonfield: 'longitude',
+          delimiter: ',',
+        }, function (err, geojson) {
+          if (err) {
+            console.error("Error converting CSV to GeoJSON:", err);
+            return;
+          }
+
+          geojson.features.forEach(function (feature) {
+            var program = feature.properties.programref;
+            var title = feature.properties.title;
+            var count = parseInt(feature.properties.count, 10);
+            var year = parseInt(feature.properties.year, 10);
+            var latitude = feature.geometry.coordinates[1];
+            var longitude = feature.geometry.coordinates[0];
+
+            var popupContent = `<b>Program:</b> ${title}<br/><b>Year:</b> ${year}<br/><b>Count:</b> ${count}`;
+            
+            var marker = L.marker([latitude, longitude], { icon: createCustomIcon('marker-icon-' + program.toLowerCase().replace(/\s+/g, '')) }).bindPopup(popupContent);
+
+            marker.year = year;
+            marker.program = program;
+            marker.count = count;
+            allMarkers.push(marker);
+
+           if (programGroups.hasOwnProperty(program)) {
+          marker.addTo(programGroups[program]);
+        }
+
+        markerCluster.addLayer(marker);
+      });
+
+      var overlays = {
+        '<span class="custom-marker marker-icon-ymh"></span> Youth Mentor Hunt': YMH,
+        '<span class="custom-marker marker-icon-nextsteps"></span> Next Steps': NextSteps,
+        '<span class="custom-marker marker-icon-wow"></span> Women on the Wing': WOW,
+        '<span class="custom-marker marker-icon-pfw"></span> Pathway for Wildlife': PFW,
+        '<span class="custom-marker marker-icon-pfwwl"></span> PFW Working Lands': PFWWL,
+        '<span class="custom-marker marker-icon-gip"></span> Grasslands Improvement Program': GIP,
+        '<span class="custom-marker marker-icon-cfw"></span> Corners for Wildlife': CFW,
+        '<span class="custom-marker marker-icon-psc"></span> Pollinator Safety Corner': PSC,
+        '<span class="custom-marker marker-icon-rxfire"></span> Prescribed Fire': RxFire,
+        '<span class="custom-marker marker-icon-chapterproject"></span> Chapter Project': ChapterProject,
+        '<span class="custom-marker marker-icon-habitatshare"></span> Habitat Share': HabitatShare,
+        '<span class="custom-marker marker-icon-habitattour"></span> Habitat Tour': HabitatTour,
+        '<span class="custom-marker marker-icon-tsp"></span> Technical Assistance': TSP,
+        '<span class="custom-marker marker-icon-bp"></span> Berggren Plan': BP,
+        '<span class="custom-marker marker-icon-ofw"></span> OFW Public Access': OFW
+      };
+
+      var control = L.control.layers(null, overlays, { collapsed: true });
+      control.addTo(map);
+
+      // Add the program layers to the map by default
+      map.addLayer(YMH);
+      map.addLayer(NextSteps);
+      map.addLayer(WOW);
+      map.addLayer(PFW);
+      map.addLayer(PFWWL);
+      map.addLayer(GIP);
+      map.addLayer(CFW);
+      map.addLayer(PSC);
+      map.addLayer(RxFire);
+      map.addLayer(ChapterProject);
+      map.addLayer(HabitatShare);
+      map.addLayer(HabitatTour);
+      map.addLayer(TSP);
+      map.addLayer(BP);
+      map.addLayer(OFW);
+
+      var container = control.getContainer();
+      container.style.bottom = '10px'; // Move control to the bottom
+      container.style.top = '5px'; // Ensure it's not positioned at the top
+      var customText = L.DomUtil.create('div', 'custom-text');
+      container.insertBefore(customText, container.firstChild);
+
+      // Create elements to display the counts
+      var totalCountText = L.DomUtil.create('div', 'total-count-text', customText);
+      totalCountText.innerHTML = 'Total Count: <span id="totalCount">0</span>';
+  var slider = document.getElementById('slider');
+
+      noUiSlider.create(slider, {
+        start: [2019, 2024],
+        connect: true,
+        range: {
+          'min': 2019,
+          'max': 2024
+        },
+        step: 1,
+        tooltips: false,
+        format: {
+          to: function (value) {
+            return Math.round(value);
+          },
+          from: function (value) {
+            return Number(value);
+          }
+        },
+        pips: {
+          mode: 'values',
+          values: [2019, 2020, 2021, 2022, 2023, 2024],
+          density: 20
+        }
+      });
+
+      slider.noUiSlider.on('update', updateMarkers);
+
+      function updateMarkers(values) {
+        var minYear = parseInt(values[0]);
+        var maxYear = parseInt(values[1]);
+
+        markerCluster.clearLayers();
+        Object.values(programGroups).forEach(function (group) {
+          group.clearLayers();
+        });
+
+        var filteredCount = 0;
+
+        allMarkers.forEach(function (marker) {
+          var markerYear = parseInt(marker.year);
+          if (markerYear >= minYear && markerYear <= maxYear) {
+            if (map.hasLayer(programGroups[marker.program])) {
+              filteredCount += marker.count;
+              markerCluster.addLayer(marker);
+              programGroups[marker.program].addLayer(marker); // Ensure marker is added to its specific program group
+            }
+          }
+        });
+
+        // Update the total count in the HTML
+document.getElementById('totalCount').textContent = filteredCount.toLocaleString();
+
+
+        mcgLayerSupportGroup.checkIn(Object.values(programGroups));
+      }
+
+      // Add event listeners to the layer control checkboxes
+      map.on('overlayadd', function(e) {
+        updateMarkers(slider.noUiSlider.get());
+      });
+
+      map.on('overlayremove', function(e) {
+        updateMarkers(slider.noUiSlider.get());
+      });
+
+      // Initial update to show markers on load
+      updateMarkers(slider.noUiSlider.get());
+    });
   });
 
-  map.attributionControl.setPrefix(
-    'View <a href="https://github.com/HandsOnDataViz/leaflet-map-csv" target="_blank">code on GitHub</a>'
-  );
+// Function to handle orientation change
+function handleOrientationChange() {
+  if (window.matchMedia("(orientation: landscape)").matches) {
+    // Device is in landscape orientation
+    // Adjust map styles or behavior as needed
+    // For example, rotate the map
+    document.getElementById('map').style.transform = 'rotate(90deg)';
+  } else {
+    // Device is in portrait orientation
+    // Reset map styles or behavior if necessary
+    document.getElementById('map').style.transform = 'rotate(0deg)';
+  }
+}
+
+// Event listener for orientation change
+window.addEventListener("orientationchange", handleOrientationChange);
 
   </script>
-</body>
-</html>
+
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: ""
+      }], "*")
+    }
+
+    // always overwrite window.name, in case users try to set it manually
+    window.name = "result"
+  </script>
+
+    <script>
+      let allLines = []
+
+      window.addEventListener("message", (message) => {
+        if (message.data.console){
+          let insert = document.querySelector("#insert")
+          allLines.push(message.data.console.payload)
+          insert.innerHTML = allLines.join(";\r")
+
+          let result = eval.call(null, message.data.console.payload)
+          if (result !== undefined){
+            console.log(result)
+          }
+        }
+      })
+    </script>
+
+
+
+</body></html>
