@@ -362,11 +362,20 @@ margin-left: 30px;
 
     <script type="text/javascript">
 
-    var map = L.map('map').setView([41.576, -99.634], 6);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 12,
-    }).addTo(map);
+// Function to detect if the device is mobile based on screen width
+function isMobileDevice() {
+    return window.innerWidth <= 800;
+}
+
+// Set the initial zoom level based on the device type
+var initialZoom = isMobileDevice() ? 6 : 7;
+
+// Initialize the map with the appropriate zoom level
+var map = L.map('map').setView([41.576, -99.634], initialZoom);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  maxZoom: 12,
+}).addTo(map);
 
     var markerCluster = L.markerClusterGroup();
     var YMH = new L.layerGroup();
