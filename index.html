@@ -422,7 +422,9 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 
     var years = [2019, 2020, 2021, 2022, 2023, 2024];
 
-    var mcgLayerSupportGroup = L.markerClusterGroup.layerSupport();
+  var mcgLayerSupportGroup = L.markerClusterGroup.layerSupport({
+  maxClusterRadius: 50, // Adjust this value to see more clusters at initial zoom level
+});
     Object.values(programGroups).forEach(function(group) {
       mcgLayerSupportGroup.checkIn(group);
     });
