@@ -1,8 +1,331 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Map with Clustering Toggle</title>
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title></title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script type="text/javascript" src="https://fiddle.jshell.net/js/lib/dummy.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://fiddle.jshell.net/css/result-light.css">
+
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/csv2geojson@latest/csv2geojson.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.0/dist/leaflet.markercluster.layersupport.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.1/dist/leaflet.markercluster.layersupport.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style id="compiled-css" type="text/css">
+        #map {
+      height: calc(100% - 80px); /* Adjust this value if needed for other elements */
+      width: 100%;
+    }
+   #slider {
+      margin: 20px;
+    }
+
+#progress {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    left: 400px;
+    top: 300px;
+    width: 200px;
+    height: 20px;
+    margin-top: -20px;
+    margin-left: -100px;
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+#progress-bar {
+    width: 0;
+    height: 100%;
+    background-color: #76A6FC;
+    border-radius: 4px;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.buttonsTable {
+    border: 1px solid grey;
+    border-collapse: collapse;
+}
+
+.buttonsTable td, .buttonsTable th {
+    padding: 0.5em;
+    border: 1px solid grey;
+}
+
+.version-disabled {
+    text-decoration: line-through;
+}
+
+
+.custom-marker {
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+margin-right: 8px;
+  color: #fff; /* Text color for cluster count */
+}
+
+/* custom icon styles */
+
+.marker-icon-ymh::before {
+  font-family: FontAwesome;
+  content: '\f111'; /* Unicode for the star icon */
+  color: #b30000; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-pfw::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #90c987; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-cfw::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #f6c141; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-psc::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #f48f56; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-chapterproject::before {
+  font-family: 'bootstrap-icons';
+  content: '\f5e3'; /* Unicode for the star icon */
+  color: #7bafde; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-nextsteps::before {
+  font-family: FontAwesome;
+  content: '\f111'; /* Unicode for the star icon */
+  color: #fec12c; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-wow::before {
+  font-family: FontAwesome;
+  content: '\f111'; /* Unicode for the star icon */
+  color: #4575b4; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-bp::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #b587c7; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+  z-index: 999; /* Ensure the marker is on top */
+}
+
+.marker-icon-habitatshare::before {
+  font-family: 'bootstrap-icons';
+  content: '\f5e3'; /* Unicode for the star icon */
+  color: #ae76a3; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-ofw::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #FDAE33; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-rxfire::before {
+  font-family: 'bootstrap-icons';
+  content: '\f5e3'; /* Unicode for the star icon */
+  color: #ef6548; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-tsp::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #09bb9f; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-habitattour::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #005077; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
+.marker-icon-pfwwl::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #238f9d; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+.marker-icon-gip::before {
+  font-family: FontAwesome;
+  content: '\f005'; /* Unicode for the star icon */
+  color: #7968aa; /* Customize the icon color */
+  font-size: 20px; /* Customize the icon size */
+}
+
+
+/* Custom cluster icon style */
+.custom-cluster-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: #fff; /* Text color for cluster count */
+}
+
+/* Adjust the color and styles for cluster on hover */
+.custom-cluster-icon:hover {
+  background-color: #3bb2d0; /* Your custom hover background color */
+  cursor: pointer;
+}
+
+        /* Small clusters */
+        .marker-cluster-small {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Medium clusters */
+        .marker-cluster-medium {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Large clusters */
+        .marker-cluster-large {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Extra large clusters */
+        .marker-cluster-extra-large {
+            background-color: #bdbdbd; /* Your custom background color */
+        }
+
+        /* Adjust text color for better visibility */
+        /* You can customize this as well */
+        .marker-cluster div {
+            color: #282828; /* Text color for cluster numbers */
+        }
+
+        /* Hover styles for clusters */
+        /* Customize the hover styles as needed */
+        .marker-cluster:hover {
+            background-color: #3bb2d0; /* Your custom hover background color */
+            color: #fff; /* Text color on hover */
+        }
+
+.legend {
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.legend h4 {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/*custom code for slider*/
+.noUi-connect{background:#5e5e5e!important}
+
+    .noUi-target, .noUi-base, .noUi-origin, .noUi-handle, .noUi-connect, .noUi-vertical, .noUi-horizontal, .noUi-txt-dir-rtl, .noUi-horizontal .noUi-handle, .noUi-vertical .noUi-handle {
+      font-family: sans-serif !important;
+font-size: 16px!important;
+    }
+
+   /* Adjust pip lines and labels */
+    .noUi-pips-horizontal .noUi-value {
+      margin-top: 15px; /* Adjust this value to add more space between lines and labels */
+           font-size: 12px; /* Adjust font size if necessary */
+    }
+    .noUi-pips-horizontal .noUi-marker-large {
+      height: 5px; /* Adjust height to make lines shorter */
+      top: 10px; /* Adjust top position if necessary */
+    }
+
+
+/* Default for desktop devices */
+#map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Adjust for mobile devices */
+@media (max-width: 800px) {
+  #map-container {
+    height: 90vh;
+  }
+}
+
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+#slider-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+right: 10px;
+  z-index: 1000;
+}
+
+#slider {
+}
+
+.total-count-text {
+    padding: 5px 10px; /* Top-Bottom, Left-Right padding */
+    background-color: white; /* Optional: Add a background color *?
+    display: inline-block; /* Ensure it fits content */
+  }
+
+    /* EOS */
+  </style>
+
+  <script id="insert"></script>
+
+  
+</head>
+<body>
+    
+  <title>Nebraska Pheasants Forever Accomplishments</title>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -11,139 +334,322 @@
   <script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.0/dist/leaflet.markercluster.layersupport.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
-<script src="https://unpkg.com/leaflet.markercluster.freezable@1.0.0/dist/leaflet.markercluster.freezable.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
-  <style>
-    html, body { height: 100%; margin: 0; overflow: hidden; }
-    #map-container { position: relative; width: 100%; height: 100vh; }
-    #map { width: 100%; height: 100%; }
-    #slider-container { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 1000; }
-    #slider { width: 80%; max-width: 600px; height: 15px; margin: 20px auto; }
-    .total-count-text { padding: 5px 10px; background-color: white; display: inline-block; }
-    .btn-cluster { position: absolute; top: 50px; left: 10px; z-index: 1000; background: white; border: none; padding: 5px 10px; cursor: pointer; }
-    .btn-cluster:hover { background: #ddd; }
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+
+   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+    #map {
+      height: calc(95% - 60px); /* Adjust this value if needed */
+      width: 100%;
+    }
+
+
+
+#slider {
+  width: 80%;
+  max-width: 600px; /* Set a maximum width for the slider */
+height:15px;
+  margin: 0 auto; /* Center the slider */
+margin-top: 20px;
+}
   </style>
 </head>
-<body>
   <div id="map-container">
-    <div id="map"></div>
-    <div id="slider" ></div>
-    <button class="btn-cluster" id="toggle-cluster">Toggle Clustering</button>
-  </div>
+<div id="map"></div>
+<div id="slider" ></div>
+</div>
 
-  <script type="text/javascript">
-    function isMobileDevice() { return window.innerWidth <= 800; }
-    var initialZoom = isMobileDevice() ? 6 : 7;
-    var map = L.map('map').setView([41.576, -99.634], initialZoom);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 12,
-    }).addTo(map);
+  
 
-    var YMH = new L.layerGroup(), NextSteps = new L.layerGroup(), WOW = new L.layerGroup(), PFW = new L.layerGroup();
-    var PFWWL = new L.layerGroup(), GIP = new L.layerGroup(), CFW = new L.layerGroup(), PSC = new L.layerGroup();
-    var RxFire = new L.layerGroup(), ChapterProject = new L.layerGroup(), HabitatShare = new L.layerGroup();
-    var HabitatTour = new L.layerGroup(), TSP = new L.layerGroup(), BP = new L.layerGroup(), OFW = new L.layerGroup();
-    var allMarkers = [], isClusteringEnabled = true;
+    <script type="text/javascript">
+
+// Function to detect if the device is mobile based on screen width
+function isMobileDevice() {
+    return window.innerWidth <= 800;
+}
+
+// Set the initial zoom level based on the device type
+var initialZoom = isMobileDevice() ? 6 : 7;
+
+// Initialize the map with the appropriate zoom level
+var map = L.map('map').setView([41.576, -99.634], initialZoom);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  maxZoom: 12,
+}).addTo(map);
+
+    var markerCluster = L.markerClusterGroup();
+    var YMH = new L.layerGroup();
+    var NextSteps = new L.layerGroup();
+    var WOW = new L.layerGroup();
+    var PFW = new L.layerGroup();
+    var PFWWL = new L.layerGroup();
+    var GIP = new L.layerGroup();
+    var CFW = new L.layerGroup();
+    var PSC = new L.layerGroup();
+    var RxFire = new L.layerGroup();
+    var ChapterProject = new L.layerGroup();
+    var HabitatShare = new L.layerGroup();
+    var HabitatTour = new L.layerGroup();
+    var TSP = new L.layerGroup();
+    var BP = new L.layerGroup();
+    var OFW = new L.layerGroup();
+
+    var allMarkers = [];
 
     function createCustomIcon(className) {
-      return L.divIcon({ className: 'custom-marker ' + className });
+      return L.divIcon({
+        className: 'custom-marker ' + className,
+      });
     }
 
     var programGroups = {
-      "YMH": YMH, "Next Steps": NextSteps, "WOW": WOW, "PFW": PFW, "PFWWL": PFWWL, "GIP": GIP,
-      "CFW": CFW, "PSC": PSC, "Rx Fire": RxFire, "Chapter Project": ChapterProject, "Habitat Share": HabitatShare,
-      "Habitat Tour": HabitatTour, "TSP": TSP, "BP": BP, "OFW": OFW
+      "YMH": YMH,
+      "Next Steps": NextSteps,
+      "WOW": WOW,
+      "PFW": PFW,
+      "PFWWL": PFWWL,
+      "GIP": GIP,
+      "CFW": CFW,
+      "PSC": PSC,
+      "Rx Fire": RxFire,
+      "Chapter Project": ChapterProject,
+      "Habitat Share": HabitatShare,
+      "Habitat Tour": HabitatTour,
+      "TSP": TSP,
+      "BP": BP,
+      "OFW": OFW
     };
 
-    var mcgLayerSupportGroup = L.markerClusterGroup.layerSupport({ maxClusterRadius: 50 });
-    Object.values(programGroups).forEach(group => mcgLayerSupportGroup.checkIn(group));
+    var years = [2019, 2020, 2021, 2022, 2023, 2024];
+
+  var mcgLayerSupportGroup = L.markerClusterGroup.layerSupport({
+  maxClusterRadius: 50, // Adjust this value to see more clusters at initial zoom level
+});
+    Object.values(programGroups).forEach(function(group) {
+      mcgLayerSupportGroup.checkIn(group);
+    });
+
     mcgLayerSupportGroup.addTo(map);
 
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfQd3Get9tbbE-2bW6eY9BzOXtJFSQy4lS8_Nxj3ImRoTpbo-HcEhhVAjDrz17LeIGg41BIxVHkALE/pub?gid=2038937128&single=true&output=csv';
-    fetch(csvUrl).then(response => response.text()).then(csvData => {
-      csv2geojson.csv2geojson(csvData, { latfield: 'latitude', lonfield: 'longitude', delimiter: ',' }, (err, geojson) => {
-        if (err) { console.error("Error converting CSV to GeoJSON:", err); return; }
 
-        geojson.features.forEach(feature => {
-          var { programref: program, title, count, year } = feature.properties;
-          var latitude = feature.geometry.coordinates[1], longitude = feature.geometry.coordinates[0];
-          var popupContent = `<b>Program:</b> ${title}<br/><b>Year:</b> ${year}<br/><b>Count:</b> ${count}`;
-          var marker = L.marker([latitude, longitude], { icon: createCustomIcon('marker-icon-' + program.toLowerCase().replace(/\s+/g, '')) }).bindPopup(popupContent);
-          marker.year = parseInt(year), marker.program = program, marker.count = parseInt(count, 10);
-          allMarkers.push(marker);
-          if (programGroups.hasOwnProperty(program)) marker.addTo(programGroups[program]);
+  
+
+    fetch(csvUrl)
+      .then(response => response.text())
+      .then(csvData => {
+        csv2geojson.csv2geojson(csvData, {
+          latfield: 'latitude',
+          lonfield: 'longitude',
+          delimiter: ',',
+        }, function (err, geojson) {
+          if (err) {
+            console.error("Error converting CSV to GeoJSON:", err);
+            return;
+          }
+
+          geojson.features.forEach(function (feature) {
+            var program = feature.properties.programref;
+            var title = feature.properties.title;
+            var count = parseInt(feature.properties.count, 10);
+            var year = parseInt(feature.properties.year, 10);
+            var latitude = feature.geometry.coordinates[1];
+            var longitude = feature.geometry.coordinates[0];
+
+            var popupContent = `<b>Program:</b> ${title}<br/><b>Year:</b> ${year}<br/><b>Count:</b> ${count}`;
+            
+            var marker = L.marker([latitude, longitude], { icon: createCustomIcon('marker-icon-' + program.toLowerCase().replace(/\s+/g, '')) }).bindPopup(popupContent);
+
+            marker.year = year;
+            marker.program = program;
+            marker.count = count;
+            allMarkers.push(marker);
+
+           if (programGroups.hasOwnProperty(program)) {
+          marker.addTo(programGroups[program]);
+        }
+
+        markerCluster.addLayer(marker);
+      });
+
+      var overlays = {
+        '<span class="custom-marker marker-icon-ymh"></span> Youth Mentor Hunt': YMH,
+        '<span class="custom-marker marker-icon-nextsteps"></span> Next Steps': NextSteps,
+        '<span class="custom-marker marker-icon-wow"></span> Women on the Wing': WOW,
+        '<span class="custom-marker marker-icon-pfw"></span> Pathway for Wildlife': PFW,
+        '<span class="custom-marker marker-icon-pfwwl"></span> PFW Working Lands': PFWWL,
+        '<span class="custom-marker marker-icon-gip"></span> Grasslands Improvement Program': GIP,
+        '<span class="custom-marker marker-icon-cfw"></span> Corners for Wildlife': CFW,
+        '<span class="custom-marker marker-icon-psc"></span> Pollinator Safety Corner': PSC,
+        '<span class="custom-marker marker-icon-rxfire"></span> Prescribed Fire': RxFire,
+        '<span class="custom-marker marker-icon-chapterproject"></span> Chapter Project': ChapterProject,
+        '<span class="custom-marker marker-icon-habitatshare"></span> Habitat Share': HabitatShare,
+        '<span class="custom-marker marker-icon-habitattour"></span> Habitat Tour': HabitatTour,
+        '<span class="custom-marker marker-icon-tsp"></span> Technical Assistance': TSP,
+        '<span class="custom-marker marker-icon-bp"></span> Berggren Plan': BP,
+        '<span class="custom-marker marker-icon-ofw"></span> OFW Public Access': OFW
+      };
+
+      var control = L.control.layers(null, overlays, { collapsed: true });
+      control.addTo(map);
+
+      // Add the program layers to the map by default
+      map.addLayer(YMH);
+      map.addLayer(NextSteps);
+      map.addLayer(WOW);
+      map.addLayer(PFW);
+      map.addLayer(PFWWL);
+      map.addLayer(GIP);
+      map.addLayer(CFW);
+      map.addLayer(PSC);
+      map.addLayer(RxFire);
+      map.addLayer(ChapterProject);
+      map.addLayer(HabitatShare);
+      map.addLayer(HabitatTour);
+      map.addLayer(TSP);
+      map.addLayer(BP);
+      map.addLayer(OFW);
+
+      var container = control.getContainer();
+      container.style.bottom = '10px'; // Move control to the bottom
+      container.style.top = '5px'; // Ensure it's not positioned at the top
+      var customText = L.DomUtil.create('div', 'custom-text');
+      container.insertBefore(customText, container.firstChild);
+
+      // Create elements to display the counts
+      var totalCountText = L.DomUtil.create('div', 'total-count-text', customText);
+      totalCountText.innerHTML = 'Total Count: <span id="totalCount">0</span>';
+  var slider = document.getElementById('slider');
+
+      noUiSlider.create(slider, {
+        start: [2019, 2024],
+        connect: true,
+        range: {
+          'min': 2019,
+          'max': 2024
+        },
+        step: 1,
+        tooltips: false,
+        format: {
+          to: function (value) {
+            return Math.round(value);
+          },
+          from: function (value) {
+            return Number(value);
+          }
+        },
+        pips: {
+          mode: 'values',
+          values: [2019, 2020, 2021, 2022, 2023, 2024],
+          density: 20
+        }
+      });
+
+      slider.noUiSlider.on('update', updateMarkers);
+
+      function updateMarkers(values) {
+        var minYear = parseInt(values[0]);
+        var maxYear = parseInt(values[1]);
+
+        markerCluster.clearLayers();
+        Object.values(programGroups).forEach(function (group) {
+          group.clearLayers();
         });
 
-        var overlays = {
-          '<span class="custom-marker marker-icon-ymh"></span> Youth Mentor Hunt': YMH,
-          '<span class="custom-marker marker-icon-nextsteps"></span> Next Steps': NextSteps,
-          '<span class="custom-marker marker-icon-wow"></span> Women on the Wing': WOW,
-          '<span class="custom-marker marker-icon-pfw"></span> Pathway for Wildlife': PFW,
-          '<span class="custom-marker marker-icon-pfwwl"></span> PFW Working Lands': PFWWL,
-          '<span class="custom-marker marker-icon-gip"></span> Grasslands Improvement Program': GIP,
-          '<span class="custom-marker marker-icon-cfw"></span> Corners for Wildlife': CFW,
-          '<span class="custom-marker marker-icon-psc"></span> Pollinator Safety Corner': PSC,
-          '<span class="custom-marker marker-icon-rxfire"></span> Prescribed Fire': RxFire,
-          '<span class="custom-marker marker-icon-chapterproject"></span> Chapter Project': ChapterProject,
-          '<span class="custom-marker marker-icon-habitatshare"></span> Habitat Share': HabitatShare,
-          '<span class="custom-marker marker-icon-habitattour"></span> Habitat Tour': HabitatTour,
-          '<span class="custom-marker marker-icon-tsp"></span> Technical Assistance': TSP,
-          '<span class="custom-marker marker-icon-bp"></span> Berggren Plan': BP,
-          '<span class="custom-marker marker-icon-ofw"></span> OFW Public Access': OFW
-        };
+        var filteredCount = 0;
 
-        var control = L.control.layers(null, overlays, { collapsed: true }).addTo(map);
-        var container = control.getContainer();
-        container.style.bottom = '10px', container.style.top = '5px';
-        var customText = L.DomUtil.create('div', 'custom-text');
-        container.insertBefore(customText, container.firstChild);
+        allMarkers.forEach(function (marker) {
+          var markerYear = parseInt(marker.year);
+          if (markerYear >= minYear && markerYear <= maxYear) {
+            if (map.hasLayer(programGroups[marker.program])) {
+              filteredCount += marker.count;
+              markerCluster.addLayer(marker);
+              programGroups[marker.program].addLayer(marker); // Ensure marker is added to its specific program group
+            }
+          }
+        });
 
-        var totalCountText = L.DomUtil.create('div', 'total-count-text', customText);
-        totalCountText.innerHTML = 'Total Habitat Projects: ' + allMarkers.reduce((acc, marker) => acc + marker.count, 0);
-        
-        var yearRange = allMarkers.reduce((range, marker) => {
-          range.min = Math.min(range.min, marker.year), range.max = Math.max(range.max, marker.year);
-          return range;
-        }, { min: Infinity, max: -Infinity });
+        // Update the total count in the HTML
+document.getElementById('totalCount').textContent = filteredCount.toLocaleString();
 
-        var slider = document.getElementById('slider');
-        noUiSlider.create(slider, { start: [yearRange.min, yearRange.max], connect: true, range: { 'min': yearRange.min, 'max': yearRange.max } });
-        slider.noUiSlider.on('update', () => { updateMarkersAndTotalCount(); });
 
-        var checkboxes = Array.from(document.querySelectorAll('.leaflet-control-layers-overlays input[type="checkbox"]'));
-        checkboxes.forEach(checkbox => checkbox.addEventListener('change', () => { updateMarkersAndTotalCount(); }));
+        mcgLayerSupportGroup.checkIn(Object.values(programGroups));
+      }
 
-        function updateMarkersAndTotalCount() {
-          var yearRange = slider.noUiSlider.get().map(Number);
-          var selectedPrograms = checkboxes.filter(checkbox => checkbox.checked).map(checkbox => checkbox.nextSibling.textContent.trim());
-          mcgLayerSupportGroup.clearLayers();
-          var displayedMarkers = allMarkers.filter(marker => marker.year >= yearRange[0] && marker.year <= yearRange[1] && selectedPrograms.includes(marker.program));
-          var totalHabitatCount = displayedMarkers.reduce((acc, marker) => acc + marker.count, 0);
-          totalCountText.innerHTML = 'Total Habitat Projects: ' + totalHabitatCount;
-          if (isClusteringEnabled) {
-            displayedMarkers.forEach(marker => mcgLayerSupportGroup.addLayer(marker));
-          } else {
-            displayedMarkers.forEach(marker => map.addLayer(marker));
+      // Add event listeners to the layer control checkboxes
+      map.on('overlayadd', function(e) {
+        updateMarkers(slider.noUiSlider.get());
+      });
+
+      map.on('overlayremove', function(e) {
+        updateMarkers(slider.noUiSlider.get());
+      });
+
+      // Initial update to show markers on load
+      updateMarkers(slider.noUiSlider.get());
+    });
+  });
+
+// Function to handle orientation change
+function handleOrientationChange() {
+  if (window.matchMedia("(orientation: landscape)").matches) {
+    // Device is in landscape orientation
+    // Adjust map styles or behavior as needed
+    // For example, rotate the map
+    document.getElementById('map').style.transform = 'rotate(90deg)';
+  } else {
+    // Device is in portrait orientation
+    // Reset map styles or behavior if necessary
+    document.getElementById('map').style.transform = 'rotate(0deg)';
+  }
+}
+
+// Event listener for orientation change
+window.addEventListener("orientationchange", handleOrientationChange);
+
+  </script>
+
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: ""
+      }], "*")
+    }
+
+    // always overwrite window.name, in case users try to set it manually
+    window.name = "result"
+  </script>
+
+    <script>
+      let allLines = []
+
+      window.addEventListener("message", (message) => {
+        if (message.data.console){
+          let insert = document.querySelector("#insert")
+          allLines.push(message.data.console.payload)
+          insert.innerHTML = allLines.join(";\r")
+
+          let result = eval.call(null, message.data.console.payload)
+          if (result !== undefined){
+            console.log(result)
           }
         }
-        updateMarkersAndTotalCount();
-      });
-    });
+      })
+    </script>
 
-    document.getElementById('toggle-cluster').addEventListener('click', () => {
-      isClusteringEnabled = !isClusteringEnabled;
-      mcgLayerSupportGroup.clearLayers();
-      allMarkers.forEach(marker => map.removeLayer(marker));
-      updateMarkersAndTotalCount();
-      var toggleButton = document.getElementById('toggle-cluster');
-      toggleButton.innerText = isClusteringEnabled ? 'Disable Clustering' : 'Enable Clustering';
-    });
 
-    map.on('popupopen', () => { var container = document.querySelector('.leaflet-popup-content'); container.style.width = isMobileDevice() ? '100%' : 'auto'; });
-  </script>
-</body>
-</html>
+
+</body></html>
