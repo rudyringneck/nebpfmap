@@ -431,7 +431,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
       "OFW": OFW
     };
 
-    var years = [2019, 2020, 2021, 2022, 2023, 2024];
+    var years = [2019, 2020, 2021, 2022, 2023, 2024,2025];
 
   var mcgLayerSupportGroup = L.markerClusterGroup.layerSupport({
   maxClusterRadius: 50, // Adjust this value to see more clusters at initial zoom level
@@ -533,7 +533,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
   var slider = document.getElementById('slider');
 
       noUiSlider.create(slider, {
-        start: [2019, 2024],
+        start: [2019, 2025],
         connect: true,
         range: {
           'min': 2019,
