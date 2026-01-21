@@ -160,6 +160,13 @@ margin-right: 8px;
   font-size: 15px; /* Customize the icon size */
 }
 
+.marker-icon-ncap::before {
+  font-family: FontAwesome;
+  content: '\f0c8'; /* Unicode for the star icon */
+  color: #b30000; /* Customize the icon color */
+  font-size: 15px; /* Customize the icon size */
+}
+
 .marker-icon-rxfire::before {
   font-family: 'bootstrap-icons';
   content: '\f5e3'; /* Unicode for the star icon */
@@ -404,6 +411,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     var TSP = new L.layerGroup();
     var BP = new L.layerGroup();
     var OFW = new L.layerGroup();
+    var NCAP = new L.layerGroup();
 
     var allMarkers = [];
 
@@ -429,6 +437,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
       "TSP": TSP,
       "BP": BP,
       "OFW": OFW
+       "NCAP": NCAP
     };
 
     var years = [2019, 2020, 2021, 2022, 2023, 2024,2025];
@@ -499,6 +508,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
         '<span class="custom-marker marker-icon-tsp"></span> Technical Assistance': TSP,
         '<span class="custom-marker marker-icon-bp"></span> Berggren Plan': BP,
         '<span class="custom-marker marker-icon-ofw"></span> OFW Public Access': OFW
+        '<span class="custom-marker marker-icon-ncap"></span> Nebraska Community Access Partnership': NCAP
       };
 
       var control = L.control.layers(null, overlays, { collapsed: true });
@@ -520,6 +530,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
       map.addLayer(TSP);
       map.addLayer(BP);
       map.addLayer(OFW);
+        map.addLayer(NCAP);
 
       var container = control.getContainer();
       container.style.bottom = '10px'; // Move control to the bottom
